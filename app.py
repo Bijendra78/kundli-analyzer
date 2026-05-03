@@ -14,7 +14,7 @@ CORS(app)
 # Fetch the API key from your .env file
 API_KEY = os.environ.get("GEMINI_API_KEY")
 # Direct REST API endpoint for the latest Gemini 2.5 Flash model
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={API_KEY}"
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
 
 @app.route('/')
 def home():
