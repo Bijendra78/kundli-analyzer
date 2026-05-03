@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vedic Kundli Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #7a5f28;
+    --deep: #0a0608;
+    --deep2: #120d10;
+    --deep3: #1c1420;
+    --crimson: #8b1a2e;
+    --violet: #4a2060;
+    --text: #e8dcc8;
+    --text-dim: #9a8870;
+    --accent: #d4956a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Starfield background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 50%, rgba(74,32,96,0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(139,26,46,0.2) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 80%, rgba(201,168,76,0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--d, 3s) ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    from { opacity: var(--min, 0.1); transform: scale(1); }
+    to { opacity: var(--max, 0.8); transform: scale(1.2); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 1s ease both;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .mandala {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    animation: spin 30s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.12em;
+    line-height: 1.2;
+  }
+
+  .header p {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    margin-top: 10px;
+    font-style: italic;
+    letter-spacing: 0.05em;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+  }
+
+  .divider span {
+    color: var(--gold);
+    font-size: 1.2rem;
+  }
+
+  /* Input Form */
+  .form-card {
+    background: linear-gradient(135deg, rgba(28,20,32,0.95), rgba(18,13,16,0.98));
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 16px;
+    padding: 36px;
+    margin-bottom: 32px;
+    box-shadow: 0 0 60px rgba(201,168,76,0.05), inset 0 1px 0 rgba(201,168,76,0.1);
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-card h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 8px;
+    font-family: 'Cinzel', serif;
+  }
+
+  .field input {
+    width: 100%;
+    background: rgba(10,6,8,0.7);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s;
+  }
+
+  .field input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(201,168,76,0.1);
+  }
+
+  .field input::placeholder { color: var(--text-dim); opacity: 0.6; }
+
+  .analyze-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--gold-dim), var(--gold), var(--gold-dim));
+    border: none;
+    border-radius: 10px;
+    color: var(--deep);
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .analyze-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+
+  .analyze-btn:hover::before { transform: translateX(100%); }
+  .analyze-btn:hover { box-shadow: 0 0 30px rgba(201,168,76,0.4); transform: translateY(-1px); }
+  .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* Loading */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 60px 20px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .loading.active { display: block; }
+
+  .orbit {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    position: relative;
+  }
+
+  .orbit-ring {
+    position: absolute;
+    inset: 0;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    border-top-color: var(--gold);
+    animation: orbit var(--speed, 1.5s) linear infinite;
+  }
+
+  .orbit-ring:nth-child(2) {
+    inset: 10px;
+    border-top-color: var(--accent);
+    --speed: 2.5s;
+    animation-direction: reverse;
+  }
+
+  .orbit-ring:nth-child(3) {
+    inset: 20px;
+    border-top-color: var(--violet);
+    --speed: 3.5s;
+  }
+
+  @keyframes orbit { to { transform: rotate(360deg); } }
+
+  .loading p {
+    color: var(--text-dim);
+    font-style: italic;
+    font-size: 1.05rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  /* Results */
+  .results {
+    display: none;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .results.active { display: block; }
+
+  /* Kundli Chart */
+  .chart-section {
+    background: linear-gradient(135deg, rgba(28,20,32,0.95), rgba(18,13,16,0.98));
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 0 60px rgba(201,168,76,0.04);
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::before, .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dim));
+  }
+
+  .section-title::after {
+    background: linear-gradient(to left, transparent, var(--gold-dim));
+  }
+
+  /* North Indian Chart */
+  .kundli-chart {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    width: min(340px, 90vw);
+    height: min(340px, 90vw);
+    margin: 0 auto 28px;
+    border: 2px solid var(--gold-dim);
+    position: relative;
+  }
+
+  .house {
+    border: 1px solid rgba(201,168,76,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    position: relative;
+    font-size: clamp(0.6rem, 1.5vw, 0.75rem);
+    gap: 2px;
+  }
+
+  .house-num {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-dim);
+    font-size: clamp(0.5rem, 1.2vw, 0.65rem);
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    opacity: 0.7;
+  }
+
+  .house-sign {
+    color: var(--text-dim);
+    font-size: clamp(0.55rem, 1.2vw, 0.68rem);
+    font-style: italic;
+  }
+
+  .house-planets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    justify-content: center;
+  }
+
+  .planet-tag {
+    background: linear-gradient(135deg, var(--gold-dim), #5a4018);
+    color: var(--gold-light);
+    border-radius: 3px;
+    padding: 1px 4px;
+    font-size: clamp(0.5rem, 1.1vw, 0.62rem);
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* Corner houses (diamond shape) via clip - just highlight center */
+  .house-center {
+    grid-column: 2 / 4;
+    grid-row: 2 / 4;
+    background: rgba(201,168,76,0.04);
+    border: 1px solid rgba(201,168,76,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .lagna-label {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.55rem, 1.3vw, 0.7rem);
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* Grid lines for North Indian */
+  .kundli-chart::before {
+    content: '';
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    width: 50%;
+    height: 50%;
+    border: 1px solid rgba(201,168,76,0.2);
+    pointer-events: none;
+  }
+
+  /* Diagonal lines */
+  .kundli-chart::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      linear-gradient(to bottom right, transparent calc(25% - 1px), rgba(201,168,76,0.15) calc(25%), transparent calc(25% + 1px)),
+      linear-gradient(to bottom left, transparent calc(25% - 1px), rgba(201,168,76,0.15) calc(25%), transparent calc(25% + 1px)),
+      linear-gradient(to top right, transparent calc(25% - 1px), rgba(201,168,76,0.15) calc(25%), transparent calc(25% + 1px)),
+      linear-gradient(to top left, transparent calc(25% - 1px), rgba(201,168,76,0.15) calc(25%), transparent calc(25% + 1px));
+    pointer-events: none;
+  }
+
+  /* Analysis sections */
+  .analysis-block {
+    background: linear-gradient(135deg, rgba(28,20,32,0.95), rgba(18,13,16,0.98));
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .analysis-block h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .analysis-block h3 .icon { font-size: 1.1rem; }
+
+  .analysis-content {
+    font-size: 1.02rem;
+    line-height: 1.85;
+    color: var(--text);
+  }
+
+  .analysis-content strong {
+    color: var(--gold-light);
+    font-weight: 600;
+  }
+
+  .analysis-content em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .planet-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.95rem;
+  }
+
+  .planet-table th {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    text-align: left;
+  }
+
+  .planet-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(201,168,76,0.07);
+    color: var(--text);
+  }
+
+  .planet-table tr:last-child td { border-bottom: none; }
+
+  .planet-table .pname {
+    color: var(--gold-light);
+    font-weight: 600;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-family: 'Cinzel', serif;
+  }
+
+  .badge-good { background: rgba(46,120,46,0.25); color: #7dcd7d; border: 1px solid rgba(46,120,46,0.3); }
+  .badge-avg  { background: rgba(201,168,76,0.15); color: var(--gold-light); border: 1px solid rgba(201,168,76,0.25); }
+  .badge-bad  { background: rgba(139,26,46,0.25); color: #d98080; border: 1px solid rgba(139,26,46,0.3); }
+
+  .dasha-timeline {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .dasha-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: rgba(10,6,8,0.5);
+    border-left: 3px solid var(--gold-dim);
+    transition: all 0.3s;
+  }
+
+  .dasha-item.current {
+    border-left-color: var(--gold);
+    background: rgba(201,168,76,0.07);
+    box-shadow: 0 0 20px rgba(201,168,76,0.05);
+  }
+
+  .dasha-planet {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-light);
+    font-size: 0.85rem;
+    min-width: 70px;
+    font-weight: 600;
+  }
+
+  .dasha-years {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    font-style: italic;
+  }
+
+  .dasha-desc {
+    color: var(--text);
+    font-size: 0.92rem;
+    flex: 1;
+  }
+
+  .current-tag {
+    background: var(--gold);
+    color: var(--deep);
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .remedies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-top: 12px;
+  }
+
+  .remedy-card {
+    background: rgba(10,6,8,0.6);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .remedy-card .r-icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .remedy-card .r-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .remedy-card .r-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+  .disclaimer {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    font-style: italic;
+    margin-top: 32px;
+    padding: 20px;
+    border-top: 1px solid rgba(201,168,76,0.1);
+    opacity: 0.7;
+  }
+
+  .error-msg {
+    background: rgba(139,26,46,0.2);
+    border: 1px solid rgba(139,26,46,0.4);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    color: #d98080;
+    display: none;
+  }
+
+  .error-msg.active { display: block; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .form-card { padding: 24px 18px; }
+    .chart-section { padding: 20px 14px; }
+    .analysis-block { padding: 20px 16px; }
+    .planet-table { font-size: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <svg class="mandala" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="48" stroke="#c9a84c" stroke-width="0.8" opacity="0.4"/>
+      <circle cx="50" cy="50" r="38" stroke="#c9a84c" stroke-width="0.5" opacity="0.3"/>
+      <circle cx="50" cy="50" r="28" stroke="#c9a84c" stroke-width="0.5" opacity="0.3"/>
+      <circle cx="50" cy="50" r="8" fill="#c9a84c" opacity="0.6"/>
+      <g opacity="0.6">
+        <line x1="50" y1="2" x2="50" y2="18" stroke="#c9a84c" stroke-width="1"/>
+        <line x1="50" y1="82" x2="50" y2="98" stroke="#c9a84c" stroke-width="1"/>
+        <line x1="2" y1="50" x2="18" y2="50" stroke="#c9a84c" stroke-width="1"/>
+        <line x1="82" y1="50" x2="98" y2="50" stroke="#c9a84c" stroke-width="1"/>
+        <line x1="15" y1="15" x2="27" y2="27" stroke="#c9a84c" stroke-width="0.8"/>
+        <line x1="73" y1="73" x2="85" y2="85" stroke="#c9a84c" stroke-width="0.8"/>
+        <line x1="85" y1="15" x2="73" y2="27" stroke="#c9a84c" stroke-width="0.8"/>
+        <line x1="27" y1="73" x2="15" y2="85" stroke="#c9a84c" stroke-width="0.8"/>
+      </g>
+      <polygon points="50,20 62,44 88,50 62,56 50,80 38,56 12,50 38,44" stroke="#c9a84c" stroke-width="0.7" fill="none" opacity="0.5"/>
+    </svg>
+    <h1>Vedic Kundli Analysis</h1>
+    <p>Jyotish Shastra — The Ancient Science of Light</p>
+  </div>
+
+  <div class="divider"><span>✦</span></div>
+
+  <!-- Form -->
+  <div class="form-card" id="formCard">
+    <h2>✦ Birth Details ✦</h2>
+    <div class="form-grid">
+      <div class="field">
+        <label>Date of Birth</label>
+        <input type="text" id="dob" value="14/01/1998" placeholder="DD/MM/YYYY">
+      </div>
+      <div class="field">
+        <label>Time of Birth</label>
+        <input type="text" id="tob" value="05:00 AM" placeholder="HH:MM AM/PM">
+      </div>
+      <div class="field">
+        <label>Place of Birth</label>
+        <input type="text" id="pob" value="Mumbai, India" placeholder="City, Country">
+      </div>
+      <div class="field">
+        <label>Language / भाषा</label>
+        <select id="language" style="width: 100%; background: rgba(10,6,8,0.7); border: 1px solid rgba(201,168,76,0.2); border-radius: 8px; padding: 12px 16px; color: var(--text); font-family: 'Crimson Pro', serif; font-size: 1rem; outline: none; transition: all 0.3s;">
+          <option value="English">English</option>
+          <option value="Hindi">हिन्दी </option>
+        </select>
+      </div>
+    </div>
+    <button class="analyze-btn" id="analyzeBtn" onclick="analyzeKundli()">
+      ✦ Generate Kundli Analysis ✦
+    </button>
+  </div>
+
+  <div class="error-msg" id="errorMsg">
+    Unable to generate analysis. Please try again.
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="orbit">
+      <div class="orbit-ring"></div>
+      <div class="orbit-ring"></div>
+      <div class="orbit-ring"></div>
+    </div>
+    <p>Consulting the cosmic chart…<br>Reading planetary alignments…</p>
+  </div>
+
+  <!-- Results -->
+  <div class="results" id="results">
+    <!-- Chart -->
+    <div class="chart-section">
+      <div class="section-title">North Indian Kundli Chart</div>
+      <div class="kundli-chart" id="kundliGrid"></div>
+    </div>
+
+    <!-- Dynamic AI Analysis -->
+    <div id="analysisContent"></div>
+
+    <p class="disclaimer">
+      This analysis is for informational and spiritual guidance purposes only.<br>
+      Vedic astrology is a traditional system — consult a learned Jyotishi for major life decisions.
+    </p>
+  </div>
+</div>
+
+<script>
+// Generate stars
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 120; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 2.5 + 0.5;
+  s.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%;
+    top:${Math.random()*100}%;
+    --d:${2+Math.random()*5}s;
+    --min:${0.05+Math.random()*0.2};
+    --max:${0.4+Math.random()*0.6};
+    animation-delay:${Math.random()*6}s;
+  `;
+  starsEl.appendChild(s);
+}
+
+// North Indian chart layout: 4x4 grid
+// Houses in North Indian style:
+// Row0: H12  H1   H2   H3
+// Row1: H11  [center]  H4
+// Row2: H10  [center]  H5
+// Row3: H9   H8   H7   H6
+const niLayout = [
+  [12, 1, 2, 3],
+  [11, null, null, 4],
+  [10, null, null, 5],
+  [9, 8, 7, 6]
+];
+
+// Pre-calculated positions for DOB 14/01/1998, 5:00 AM, Mumbai
+// Sagittarius Lagna (Dhanu), approx calculations
+const chartData = {
+  lagna: 'Sagittarius',
+  lagnaNum: 9, // Sagittarius = house 1 (which is house 1 in rashi order, sign 9)
+  houses: {
+    1: { sign: 'Sagittarius', planets: ['As'] },
+    2: { sign: 'Capricorn', planets: ['Me', 'Ve'] },
+    3: { sign: 'Aquarius', planets: [] },
+    4: { sign: 'Pisces', planets: [] },
+    5: { sign: 'Aries', planets: [] },
+    6: { sign: 'Taurus', planets: [] },
+    7: { sign: 'Gemini', planets: ['Ra'] },
+    8: { sign: 'Cancer', planets: ['Ma'] },
+    9: { sign: 'Leo', planets: ['Su', 'Mo'] },
+    10: { sign: 'Virgo', planets: ['Ju'] },
+    11: { sign: 'Libra', planets: ['Sa'] },
+    12: { sign: 'Scorpio', planets: ['Ke'] }
+  }
+};
+
+function buildChart() {
+  const grid = document.getElementById('kundliGrid');
+  grid.innerHTML = '';
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
+      const h = niLayout[r][c];
+      if (h === null) continue; // skip center cells individually
+      const div = document.createElement('div');
+      div.className = 'house';
+      const d = chartData.houses[h];
+      div.innerHTML = `
+        <span class="house-num">${h}</span>
+        <span class="house-sign">${d.sign.substring(0,3)}</span>
+        <div class="house-planets">
+          ${d.planets.map(p => `<span class="planet-tag">${p}</span>`).join('')}
+        </div>
+      `;
+      grid.appendChild(div);
+    }
+    // Insert center cells at row 1 and 2
+    if (r === 0) {
+      // After row 0, add the two center cells spanning rows 1-2
+      // Actually we do it differently — insert placeholder after each row
+    }
+  }
+
+  // Rebuild with proper center
+  grid.innerHTML = '';
+  // All 16 cells, center 4 merged into one
+  const cells = [
+    {h:12,r:0,c:0},{h:1,r:0,c:1},{h:2,r:0,c:2},{h:3,r:0,c:3},
+    {h:11,r:1,c:0},{center:true,r:1,c:1,rs:2,cs:2},{h:4,r:1,c:3},
+    {h:10,r:2,c:0},{h:5,r:2,c:3},
+    {h:9,r:3,c:0},{h:8,r:3,c:1},{h:7,r:3,c:2},{h:6,r:3,c:3}
+  ];
+
+  grid.style.display = 'grid';
+  grid.style.gridTemplateColumns = 'repeat(4,1fr)';
+  grid.style.gridTemplateRows = 'repeat(4,1fr)';
+
+  cells.forEach(cell => {
+    const div = document.createElement('div');
+    if (cell.center) {
+      div.className = 'house house-center';
+      div.style.gridColumn = '2/4';
+      div.style.gridRow = '2/4';
+      div.innerHTML = `
+        <div class="lagna-label">☉ KUNDLI<br>${chartData.lagna}<br>Lagna</div>
+      `;
+    } else {
+      div.className = 'house';
+      div.style.gridColumn = `${cell.c+1}/${cell.c+2}`;
+      div.style.gridRow = `${cell.r+1}/${cell.r+2}`;
+      const d = chartData.houses[cell.h];
+      div.innerHTML = `
+        <span class="house-num">${cell.h}</span>
+        <span class="house-sign">${d.sign.substring(0,3)}</span>
+        <div class="house-planets">
+          ${d.planets.map(p => `<span class="planet-tag">${p}</span>`).join('')}
+        </div>
+      `;
+    }
+    grid.appendChild(div);
+  });
+}
+
+async function analyzeKundli() {
+  const dob = document.getElementById('dob').value.trim();
+  const tob = document.getElementById('tob').value.trim();
+  const pob = document.getElementById('pob').value.trim();
+  const lang = document.getElementById('language').value;
+
+  // 1. Check if user filled the form
+  if (!dob || !tob || !pob) {
+    alert('Please fill in all birth details.');
+    return;
+  }
+
+  // 2. Disable button and show loading animation
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true;
+  document.getElementById('loading').classList.add('active');
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('errorMsg').classList.remove('active');
+
+  // 3. Talk to YOUR Python Backend
+  try {
+    const response = await fetch("http://127.0.0.1:5000/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        dob: dob,
+        tob: tob,
+        pob: pob,
+        language: lang // NEW: Send language to backend
+      })
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // 4. Read the JSON returned by your Python code
+    const parsed = await response.json();
+
+    if (parsed.error) {
+        throw new Error(parsed.error);
+    }
+
+    // 5. Build the visual chart and text
+    buildChart();
+    renderAnalysis(parsed);
+
+    // 6. Hide loading, show results
+    document.getElementById('loading').classList.remove('active');
+    document.getElementById('results').classList.add('active');
+    
+  } catch (err) {
+    // 7. If anything fails, show the red error box
+    console.error("Analysis Failed:", err);
+    document.getElementById('loading').classList.remove('active');
+    document.getElementById('errorMsg').classList.add('active');
+  }
+
+  // 8. Re-enable the button
+  btn.disabled = false;
+}
+function formatText(t) {
+  return (t || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+
+function renderAnalysis(d) {
+  const container = document.getElementById('analysisContent');
+
+  const statusBadge = (s) => {
+    if (!s) return '';
+    const low = s.toLowerCase();
+    if (low.includes('exalt') || low.includes('own') || low.includes('strong')) return `<span class="badge badge-good">${s}</span>`;
+    if (low.includes('debil')) return `<span class="badge badge-bad">${s}</span>`;
+    return `<span class="badge badge-avg">${s}</span>`;
+  };
+
+  container.innerHTML = `
+    <!-- Planetary Table -->
+    <div class="analysis-block">
+      <h3><span class="icon">🪐</span> Planetary Positions</h3>
+      <div class="analysis-content">
+        <table class="planet-table">
+          <thead>
+            <tr>
+              <th>Planet</th><th>House</th><th>Sign</th><th>Status</th><th>Key Effect</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${(d.planetaryPositions||[]).map(p=>`
+              <tr>
+                <td class="pname">${p.planet}</td>
+                <td>${p.house}</td>
+                <td>${p.sign}</td>
+                <td>${statusBadge(p.status)}</td>
+                <td>${p.effect||''}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Lagna -->
+    <div class="analysis-block">
+      <h3><span class="icon">⬆️</span> Ascendant (Lagna) Analysis — Sagittarius</h3>
+      <div class="analysis-content">${formatText(d.lagnaAnalysis)}</div>
+    </div>
+
+    <!-- Strengths -->
+    <div class="analysis-block">
+      <h3><span class="icon">⚖️</span> Strengths & Challenges</h3>
+      <div class="analysis-content">${formatText(d.strengthsWeaknesses)}</div>
+    </div>
+
+    <!-- Career -->
+    <div class="analysis-block">
+      <h3><span class="icon">💼</span> Career & Finance</h3>
+      <div class="analysis-content">${formatText(d.careerFinance)}</div>
+    </div>
+
+    <!-- Relationships -->
+    <div class="analysis-block">
+      <h3><span class="icon">❤️</span> Relationships & Marriage</h3>
+      <div class="analysis-content">${formatText(d.relationships)}</div>
+    </div>
+
+    <!-- Health -->
+    <div class="analysis-block">
+      <h3><span class="icon">🌿</span> Health & Vitality</h3>
+      <div class="analysis-content">${formatText(d.healthVitality)}</div>
+    </div>
+
+    <!-- Yogas -->
+    <div class="analysis-block">
+      <h3><span class="icon">✨</span> Notable Yogas in This Chart</h3>
+      <div class="analysis-content">${formatText(d.yogas)}</div>
+    </div>
+
+    <!-- Dasha -->
+    <div class="analysis-block">
+      <h3><span class="icon">⏳</span> Vimshottari Dasha Timeline</h3>
+      <div class="dasha-timeline">
+        ${(d.dashaAnalysis||[]).map(da=>`
+          <div class="dasha-item ${da.isCurrent?'current':''}">
+            <span class="dasha-planet">${da.planet}</span>
+            <span class="dasha-years">${da.years}</span>
+            <span class="dasha-desc">${da.description||''}</span>
+            ${da.isCurrent?'<span class="current-tag">NOW</span>':''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Spirituality -->
+    <div class="analysis-block">
+      <h3><span class="icon">🕉️</span> Spiritual Path & Dharma</h3>
+      <div class="analysis-content">${formatText(d.spirituality)}</div>
+    </div>
+
+    <!-- Remedies -->
+    <div class="analysis-block">
+      <h3><span class="icon">🙏</span> Vedic Remedies</h3>
+      <div class="remedies-grid">
+        ${(d.remedies||[]).map(r=>`
+          <div class="remedy-card">
+            <div class="r-icon">${r.icon}</div>
+            <div class="r-title">${r.title}</div>
+            <div class="r-desc">${r.description}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="analysis-block">
+      <h3><span class="icon">🌟</span> Overall Life Reading</h3>
+      <div class="analysis-content">${formatText(d.overallSummary)}</div>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
