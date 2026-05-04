@@ -39,14 +39,19 @@ def analyze():
         tone_instruction = "clear, professional English."
 
     # Fully dynamic prompt with NO hardcoded birth dates or planet positions
-    prompt = f"""You are an expert Vedic astrologer. 
+    prompt = f"""Act as an elite Vedic Astrologer (Jyotishi).
+
+CRITICAL MATHEMATICAL CONSTRAINTS:
+1. You MUST use the Sidereal Zodiac (Nirayana system). 
+2. You MUST apply the Lahiri Ayanamsa for all planetary calculations.
+3. STRICTLY FORBIDDEN: Do not use Tropical/Western astrology calculations. 
+4. Calculate positions based strictly on the Indian Standard Time (IST) offset or the precise local time zone of the birth city provided.
 
 Birth Details: Date: {dob}, Time: {tob}, Place: {pob}
 
-Step 1: Calculate the approximate Vedic astrological chart (Lagna, planetary positions in houses and signs) for this exact birth date and location.
-Step 2: Calculate the approximate Vimshottari Dasha timeline based on the Moon's position at birth.
-Step 3: Analyze the chart.
-
+Step 1: Calculate the precise Vedic astrological chart (Lagna, planetary positions) using the mathematical constraints above.
+Step 2: Calculate the approximate Vimshottari Dasha timeline based on the Moon's Sidereal position.
+Step 3: Analyze the chart. Write the analysis using simple, everyday language (using Hinglish if the user selects Hindi) so a normal person can easily understand it without needing an astrological dictionary.
 CRITICAL INSTRUCTION: Write all the descriptive text, effects, and summaries in {tone_instruction}. However, you MUST keep all the JSON keys EXACTLY in English as shown below. 
 
 Return ONLY this exact JSON structure, filling in the empty strings with your calculated data. Do not include markdown formatting:
